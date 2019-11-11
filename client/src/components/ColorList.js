@@ -1,12 +1,12 @@
 import React, { useState } from "react";
-import axios from "axios";
+import { axiosWithAuth } from "./API/Auth";
 
 const initialColor = {
   color: "",
   code: { hex: "" }
 };
 
-const ColorList = ({ colors, updateColors }) => {
+const ColorList = ({ colors, updateColors, props }) => {
   console.log(colors);
   const [editing, setEditing] = useState(false);
   const [colorToEdit, setColorToEdit] = useState(initialColor);
@@ -17,15 +17,25 @@ const ColorList = ({ colors, updateColors }) => {
   };
 
   const saveEdit = e => {
-    e.preventDefault();
-    // Make a put request to save your updated color
-    // think about where will you get the id from...
-    // where is is saved right now?
+    axiosWithAuth()
+    .put(`/api/colors/${colorToEdit.id}`, colorToEdit)
+    .then((result) => {
+    })
+    .catch((error) => {
+      console.log(error)
+    })
   };
 
   const deleteColor = color => {
-    // make a delete request to delete this color
-  };
+			axiosWithAuth()
+				.delete(`/api/colors/${color.id}`)
+				.then((result) => {
+          updateColors(colors.filter((color) => color.id !== result.data))
+				})
+				.catch((error) => {
+					console.log(error)
+				})
+	}
 
   return (
     <div className="colors-wrap">
